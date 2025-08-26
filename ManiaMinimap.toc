@@ -2,8 +2,8 @@
 
 ## Title: ManiaMinimap
 ## Notes: Blizzlike Square Minimap
-## Author: Pingumania
 ## Category: User Interface
+## Author: Pingumania
 ## Version: @project-version@
 
 Core/Version.lua
