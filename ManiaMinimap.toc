@@ -6,5 +6,7 @@
 ## Author: Pingumania
 ## Version: @project-version@
 
+Libs\Huddle\Embed.xml
+
 Coords.lua
 ManiaMinimap.lua

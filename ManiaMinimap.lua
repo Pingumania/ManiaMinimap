@@ -12,7 +12,7 @@ local Positions = {
 }
 
 function A:OnLoad()
-    if A.IsClassicEra() then
+    if A:IsClassicEra() then
         Minimap:SetSize(200, 200)
         Minimap:ClearAllPoints()
         Minimap:SetPoint("TOPRIGHT", MinimapCluster, "TOPRIGHT", -20, -20)
@@ -24,14 +24,14 @@ end
 function A:OnLogin()
     Minimap:SetMaskTexture("Interface\\AddOns\\ManiaMinimap\\Media\\Mask.blp")
 
-    if A.IsRetail() then
+    if A:IsRetail() then
         MinimapCluster.MinimapContainer:ClearAllPoints()
         MinimapCluster.MinimapContainer:SetPoint("TOP", MinimapCluster, "TOP", 7, -10)
         MinimapCluster.BorderTop:ClearAllPoints()
         MinimapCluster.BorderTop:SetPoint("TOP", MinimapCluster, "TOP", 0, -4)
     end
 
-    if A.IsClassicEra() then
+    if A:IsClassicEra() then
         TimeManagerClockButton:ClearAllPoints()
         TimeManagerClockButton:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, 3)
     end
@@ -67,7 +67,7 @@ function A:OnLogin()
     borderFrame:SetIgnoreParentScale(true)
     borderFrame:SetScale(.8)
 
-    if A.IsRetail() then
+    if A:IsRetail() then
         ExpansionLandingPageMinimapButton:SetSize(36, 36)
         ExpansionLandingPageMinimapButton:ClearAllPoints()
         ExpansionLandingPageMinimapButton:SetPoint(unpack(Positions["ExpansionLandingPageMinimapButton"]))

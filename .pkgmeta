@@ -1,3 +1,6 @@
+externals:
+  Libs/Huddle: https://github.com/Pingumania/Huddle.git
+
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
