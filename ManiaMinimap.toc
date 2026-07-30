@@ -1,18 +1,10 @@
-## Interface: 110200
+## Interface: 11508, 120007
 
 ## Title: ManiaMinimap
 ## Notes: Blizzlike Square Minimap
 ## Category: User Interface
 ## Author: Pingumania
 ## Version: @project-version@
-
-Core/Version.lua
-Core/Compat.lua
-Core/EventHandler.lua
-Core/ContinueOnLoaded.lua
-Core/SlashHandler.lua
-Core/Hide.lua
-Core/Localization.lua
 
 Coords.lua
 ManiaMinimap.lua
