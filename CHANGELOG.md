@@ -1,3 +1,3 @@
-ManiaMinimap | v1
------------------
-- Initial release
+### v1
+
+* First release
