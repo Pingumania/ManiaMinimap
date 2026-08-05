@@ -6,7 +6,10 @@
 ## Author: Pingumania
 ## Version: @project-version@
 
+## SavedVariables: ManiaMinimapDB
+
 Libs\Huddle\Embed.xml
 
 Coords.lua
 ManiaMinimap.lua
+Options.lua

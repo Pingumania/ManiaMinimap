@@ -1,17 +1,13 @@
 local _, A = ...
 
-local gsub = gsub
-local format = format
+local UPDATE_DELAY = 0.25
 
-local function GetFormattedCoordinates(x, y)
-	return gsub(format("|cfff0f0f0%.2f|r", x*100), "%.(.+)", "|cffa0a0a0.%1|r"),
-			gsub(format("|cfff0f0f0%.2f|r", y*100), "%.(.+)", "|cffa0a0a0.%1|r")
-end
+local coordsFrame
 
 local function GetPlayerCoordinates()
-	local instanceID = C_Map.GetBestMapForUnit("player")
-	if instanceID then
-		local pos = C_Map.GetPlayerMapPosition(instanceID, "player")
+	local uiMapID = C_Map.GetBestMapForUnit("player")
+	if uiMapID then
+		local pos = C_Map.GetPlayerMapPosition(uiMapID, "player")
 		if pos then
 			return pos.x, pos.y
 		end
@@ -20,34 +16,38 @@ end
 
 local function OnUpdateMinimap(self, elapsed)
 	self.elapsed = self.elapsed + elapsed
-	if self.elapsed < self.delay then
+	if self.elapsed < UPDATE_DELAY then
 		return
 	end
 
-	if self.player then
-		local pX, pY = GetPlayerCoordinates()
-		if pX and pY then
-			self.player:SetFormattedText("%s, %s", GetFormattedCoordinates(pX, pY))
-		else
-			self.player:SetText(" ")
-		end
-	end
-
 	self.elapsed = 0
+
+	local x, y = GetPlayerCoordinates()
+	if x and y then
+		self.Text:SetFormattedText("%s, %s", A:FormatCoordinates(x, y))
+	else
+		self.Text:SetText(" ")
+	end
 end
 
-function A:InitCoords()
-	local mmCoords = CreateFrame("Frame", nil, Minimap)
-	mmCoords:SetFrameStrata("DIALOG")
-	mmCoords.elapsed = 0
-	mmCoords.delay = 0.25
+function A:ApplyCoords()
+	local enabled = A:GetOption("coords")
 
-	local mmPlayer = mmCoords:CreateFontString()
-	mmPlayer:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
-	mmPlayer:SetDrawLayer("OVERLAY")
-	mmPlayer:SetJustifyH("RIGHT")
-	mmPlayer:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", -5, -5)
+	if enabled and not coordsFrame then
+		coordsFrame = CreateFrame("Frame", nil, Minimap)
+		coordsFrame:SetFrameStrata("DIALOG")
+		coordsFrame.elapsed = 0
 
-	mmCoords.player = mmPlayer
-    mmCoords:SetScript("OnUpdate", OnUpdateMinimap)
+		coordsFrame.Text = coordsFrame:CreateFontString(nil, "OVERLAY")
+		coordsFrame.Text:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
+		coordsFrame.Text:SetJustifyH("RIGHT")
+		coordsFrame.Text:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", -5, -5)
+	end
+
+	if not coordsFrame then
+		return
+	end
+
+	coordsFrame:SetShown(enabled)
+	coordsFrame:SetScript("OnUpdate", enabled and OnUpdateMinimap or nil)
 end
