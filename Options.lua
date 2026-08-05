@@ -1,6 +1,6 @@
-local _, A = ...
+local _, ns = ...
 
-A:RegisterSettings("ManiaMinimapDB", {
+ns:RegisterSettings("ManiaMinimapDB", {
 	{
 		key = "coords",
 		type = "toggle",
@@ -29,4 +29,4 @@ A:RegisterSettings("ManiaMinimapDB", {
 	},
 })
 
-A:RegisterSettingsSlash("/maniaminimap")
+ns:RegisterSettingsSlash("/maniaminimap")

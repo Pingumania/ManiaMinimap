@@ -1,4 +1,4 @@
-local _, A = ...
+local _, ns = ...
 
 function GetMinimapShape()
 	return "SQUARE"
@@ -31,15 +31,15 @@ local function SetHidden(hidden, ...)
 		local object = select(index, ...)
 
 		if hidden then
-			A:HideFrame(object)
+			ns:HideFrame(object)
 		else
-			A:ShowFrame(object)
+			ns:ShowFrame(object)
 		end
 	end
 end
 
 local function ApplyBorder()
-	local enabled = A:GetOption("border")
+	local enabled = ns:GetOption("border")
 
 	if enabled and not borderFrame then
 		borderFrame = CreateFrame("Frame", nil, Minimap)
@@ -60,13 +60,13 @@ local function ApplyBorder()
 end
 
 local function ApplyWidgets()
-	SetHidden(A:GetOption("hideZoomButtons"), Minimap.ZoomIn, Minimap.ZoomOut, Minimap.ZoomHitArea,
+	SetHidden(ns:GetOption("hideZoomButtons"), Minimap.ZoomIn, Minimap.ZoomOut, Minimap.ZoomHitArea,
 		MinimapZoomIn, MinimapZoomOut, MinimapToggleButton)
-	SetHidden(A:GetOption("hideCalendar"), GameTimeFrame)
+	SetHidden(ns:GetOption("hideCalendar"), GameTimeFrame)
 end
 
-function A:OnLoad()
-	if A:IsClassicEra() then
+function ns:OnLoad()
+	if ns:IsClassicEra() then
 		Minimap:SetSize(200, 200)
 		Minimap:ClearAllPoints()
 		Minimap:SetPoint("TOPRIGHT", MinimapCluster, "TOPRIGHT", -20, -20)
@@ -75,28 +75,28 @@ function A:OnLoad()
 	end
 end
 
-function A:OnLogin()
+function ns:OnLogin()
 	Minimap:SetMaskTexture("Interface\\AddOns\\ManiaMinimap\\Media\\Mask.blp")
 
-	if A:IsRetail() then
+	if ns:IsRetail() then
 		MinimapCluster.MinimapContainer:ClearAllPoints()
 		MinimapCluster.MinimapContainer:SetPoint("TOP", MinimapCluster, "TOP", 7, -10)
 		MinimapCluster.BorderTop:ClearAllPoints()
 		MinimapCluster.BorderTop:SetPoint("TOP", MinimapCluster, "TOP", 0, -4)
 	end
 
-	if A:IsClassicEra() then
+	if ns:IsClassicEra() then
 		TimeManagerClockButton:ClearAllPoints()
 		TimeManagerClockButton:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, 3)
 	end
 
-	A:Hide(MinimapCompassTexture)
-	A:Hide(MinimapNorthTag)
+	ns:Hide(MinimapCompassTexture)
+	ns:Hide(MinimapNorthTag)
 
 	ApplyWidgets()
 	ApplyBorder()
 
-	if A:IsRetail() then
+	if ns:IsRetail() then
 		ExpansionLandingPageMinimapButton:SetSize(36, 36)
 		ExpansionLandingPageMinimapButton:ClearAllPoints()
 		ExpansionLandingPageMinimapButton:SetPoint(unpack(POSITIONS.ExpansionLandingPageMinimapButton))
@@ -138,12 +138,12 @@ function A:OnLogin()
 		end)
 	end
 
-	A:ApplyCoords()
+	ns:ApplyCoords()
 
-	A:RegisterOptionCallback("border", ApplyBorder)
-	A:RegisterOptionCallback("hideZoomButtons", ApplyWidgets)
-	A:RegisterOptionCallback("hideCalendar", ApplyWidgets)
-	A:RegisterOptionCallback("coords", function()
-		A:ApplyCoords()
+	ns:RegisterOptionCallback("border", ApplyBorder)
+	ns:RegisterOptionCallback("hideZoomButtons", ApplyWidgets)
+	ns:RegisterOptionCallback("hideCalendar", ApplyWidgets)
+	ns:RegisterOptionCallback("coords", function()
+		ns:ApplyCoords()
 	end)
 end

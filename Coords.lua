@@ -1,4 +1,4 @@
-local _, A = ...
+local _, ns = ...
 
 local UPDATE_DELAY = 0.25
 
@@ -24,14 +24,14 @@ local function OnUpdateMinimap(self, elapsed)
 
 	local x, y = GetPlayerCoordinates()
 	if x and y then
-		self.Text:SetFormattedText("%s, %s", A:FormatCoordinates(x, y))
+		self.Text:SetFormattedText("%s, %s", ns:FormatCoordinates(x, y))
 	else
 		self.Text:SetText(" ")
 	end
 end
 
-function A:ApplyCoords()
-	local enabled = A:GetOption("coords")
+function ns:ApplyCoords()
+	local enabled = ns:GetOption("coords")
 
 	if enabled and not coordsFrame then
 		coordsFrame = CreateFrame("Frame", nil, Minimap)
