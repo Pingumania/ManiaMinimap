@@ -11,5 +11,5 @@
 Libs\Huddle\Embed.xml
 
 Coords.lua
-ManiaMinimap.lua
+Addon.lua
 Options.lua
