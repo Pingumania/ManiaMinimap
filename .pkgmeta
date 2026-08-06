@@ -1,4 +1,6 @@
 externals:
+  Libs/LibStub: https://repos.curseforge.com/wow/ace3/trunk/LibStub
+  Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
   Libs/Huddle: https://github.com/Pingumania/Huddle.git
 
 manual-changelog:

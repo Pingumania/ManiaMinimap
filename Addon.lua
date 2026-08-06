@@ -146,4 +146,7 @@ function ns:OnLogin()
 	ns:RegisterOptionCallback("coords", function()
 		ns:ApplyCoords()
 	end)
+	ns:RegisterOptionCallback("coordsFontSize", function()
+		ns:ApplyCoordsFont()
+	end)
 end

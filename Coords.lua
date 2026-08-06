@@ -1,8 +1,22 @@
 local _, ns = ...
 
+local LSM = LibStub("LibSharedMedia-3.0")
+
 local UPDATE_DELAY = 0.25
 
 local coordsFrame
+
+function ns:GetCoordsFont()
+	return ManiaMinimapDB.coordsFont or LSM:GetDefault("font")
+end
+
+function ns:ApplyCoordsFont()
+	if not coordsFrame then
+		return
+	end
+
+	coordsFrame.Text:SetFont(LSM:Fetch("font", ns:GetCoordsFont()), ns:GetOption("coordsFontSize"), "OUTLINE")
+end
 
 local function GetPlayerCoordinates()
 	local uiMapID = C_Map.GetBestMapForUnit("player")
@@ -39,9 +53,10 @@ function ns:ApplyCoords()
 		coordsFrame.elapsed = 0
 
 		coordsFrame.Text = coordsFrame:CreateFontString(nil, "OVERLAY")
-		coordsFrame.Text:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
 		coordsFrame.Text:SetJustifyH("RIGHT")
 		coordsFrame.Text:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", -5, -5)
+
+		ns:ApplyCoordsFont()
 	end
 
 	if not coordsFrame then

@@ -8,6 +8,8 @@
 
 ## SavedVariables: ManiaMinimapDB
 
+Libs\LibStub\LibStub.lua
+Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\Huddle\Embed.xml
 
 Coords.lua
