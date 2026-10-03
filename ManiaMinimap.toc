@@ -3,6 +3,7 @@
 ## Title: ManiaMinimap
 ## Notes: Blizzlike Square Minimap
 ## Category: User Interface
+## IconTexture: Interface\Icons\inv_misc_spyglass_02
 ## Author: Pingumania
 ## Version: @project-version@
 
