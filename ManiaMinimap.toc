@@ -1,4 +1,4 @@
-## Interface: 11508, 16001, 120100
+## Interface: 16001, 120100
 
 ## Title: ManiaMinimap
 ## Notes: Blizzlike Square Minimap

@@ -55,24 +55,11 @@ local function ApplyBorder()
 	if borderFrame then
 		borderFrame:SetShown(enabled)
 	end
-
-	SetHidden(enabled, MinimapBorder, MinimapBorderTop)
 end
 
 local function ApplyWidgets()
-	SetHidden(ns:GetOption("hideZoomButtons"), Minimap.ZoomIn, Minimap.ZoomOut, Minimap.ZoomHitArea,
-		MinimapZoomIn, MinimapZoomOut, MinimapToggleButton)
+	SetHidden(ns:GetOption("hideZoomButtons"), Minimap.ZoomIn, Minimap.ZoomOut, Minimap.ZoomHitArea)
 	SetHidden(ns:GetOption("hideCalendar"), GameTimeFrame)
-end
-
-function ns:OnLoad()
-	if ns:IsClassicEra() then
-		Minimap:SetSize(200, 200)
-		Minimap:ClearAllPoints()
-		Minimap:SetPoint("TOPRIGHT", MinimapCluster, "TOPRIGHT", -20, -20)
-		MinimapZoneTextButton:ClearAllPoints()
-		MinimapZoneTextButton:SetPoint("TOP", Minimap, "TOP", 0, -5)
-	end
 end
 
 function ns:OnLogin()
@@ -85,13 +72,7 @@ function ns:OnLogin()
 		MinimapCluster.BorderTop:SetPoint("TOP", MinimapCluster, "TOP", 0, -4)
 	end
 
-	if ns:IsClassicEra() then
-		TimeManagerClockButton:ClearAllPoints()
-		TimeManagerClockButton:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, 3)
-	end
-
 	ns:Hide(MinimapCompassTexture)
-	ns:Hide(MinimapNorthTag)
 
 	ApplyWidgets()
 	ApplyBorder()
