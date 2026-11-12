@@ -12,6 +12,8 @@
 Libs\LibStub\LibStub.lua
 Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 Libs\Huddle\Embed.xml
+Libs\LibEditMode\namespaced.lua
+Libs\LibEditMode\embed.xml
 
 Coords.lua
 Addon.lua

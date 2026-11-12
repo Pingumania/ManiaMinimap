@@ -18,6 +18,15 @@ function ns:ApplyCoordsFont()
 	coordsFrame.Text:SetFont(LSM:Fetch("font", ns:GetCoordsFont()), ns:GetOption("coordsFontSize"), "OUTLINE")
 end
 
+function ns:ApplyCoordsPosition()
+	if not coordsFrame then
+		return
+	end
+
+	coordsFrame.Text:ClearAllPoints()
+	coordsFrame.Text:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", ns:GetOption("coordsOffsetX"), ns:GetOption("coordsOffsetY"))
+end
+
 local function GetPlayerCoordinates()
 	local uiMapID = C_Map.GetBestMapForUnit("player")
 	if uiMapID then
@@ -54,9 +63,9 @@ function ns:ApplyCoords()
 
 		coordsFrame.Text = coordsFrame:CreateFontString(nil, "OVERLAY")
 		coordsFrame.Text:SetJustifyH("RIGHT")
-		coordsFrame.Text:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", -5, -5)
 
 		ns:ApplyCoordsFont()
+		ns:ApplyCoordsPosition()
 	end
 
 	if not coordsFrame then
