@@ -1,10 +1,13 @@
 local _, ns = ...
 
+local LSM = LibStub("LibSharedMedia-3.0")
+
 function GetMinimapShape()
 	return "SQUARE"
 end
 
 local MASK = "Interface\\AddOns\\ManiaMinimap\\Media\\Mask.blp"
+local CHAMFER_MASK = "Interface\\AddOns\\ManiaMinimap\\Media\\MaskChamfer.tga"
 local PLATE_ATLAS = "ui-hud-minimap-header-button"
 local PLATE_SLICE = 12
 local MAP_INSET = 2
@@ -29,6 +32,12 @@ local RING_FILE = 136430
 local RING_ATLAS = "UI-HUD-Minimap-Frame-Cycle"
 local BACKGROUND_FILE = 136467
 
+local BORDER_LAYOUT = "TooltipDefaultLayout"
+local ACTION_BAR_ATLAS = "UI-HUD-ActionBar-Frame"
+local ACTION_BAR_INSET = 5
+local ACTION_BAR_EDGE = 2.5
+local MEDIA_BORDER_SIZE = 16
+
 local FRAME_LAYOUT = {
 	disableSharpening = true,
 	TopLeftCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -14, y = 16 },
@@ -42,7 +51,18 @@ local FRAME_LAYOUT = {
 }
 
 local container = MinimapCluster.MinimapContainer
+local artFrames = {}
+local artEdges = {
+	tooltip = 0,
+	actionBar = ACTION_BAR_EDGE,
+	media = 0,
+}
+local artInsets = {
+	panel = { MAP_INSET, BAND_HEIGHT, MAP_INSET, MAP_INSET },
+	actionBar = { ACTION_BAR_INSET, ACTION_BAR_INSET, ACTION_BAR_INSET, ACTION_BAR_INSET },
+}
 local artFrame, header
+local mask = MASK
 
 local function SetHidden(hidden, ...)
 	for index = 1, select("#", ...) do
@@ -117,8 +137,8 @@ local function ApplyFonts()
 end
 
 local function KeepSquare(_, texture)
-	if texture ~= MASK then
-		Minimap:SetMaskTexture(MASK)
+	if texture ~= mask then
+		Minimap:SetMaskTexture(mask)
 	end
 end
 
@@ -136,12 +156,23 @@ local function PlaceCorner()
 	Raise(corner, 1)
 end
 
+local function AnchorArt(style)
+	local insets = artInsets[style]
+	local extra = style == "actionBar" and ns:PixelSize(artFrame, 1) or 0
+
+	artFrame:ClearAllPoints()
+	ns:SetPoint(artFrame, "TOPLEFT", Minimap, "TOPLEFT", -insets[1] - extra, insets[2] + extra)
+	ns:SetPoint(artFrame, "BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", insets[3] + extra * 2, -insets[4] - extra)
+end
+
 local function Layout()
 	local cluster = MinimapCluster
 	local tracking = cluster.Tracking
 	local zone = cluster.ZoneTextButton
 	local compartment = AddonCompartmentFrame
 	local rightWidth = HEADER_HEIGHT + HEADER_GAP
+	local style = ns:GetOption("style")
+	local panel = style == "panel"
 
 	if not ns:GetOption("hideCalendar") then
 		rightWidth = rightWidth + HEADER_HEIGHT + HEADER_GAP
@@ -152,14 +183,20 @@ local function Layout()
 	zone:SetScale(1)
 
 	Minimap:ClearAllPoints()
-	Minimap:SetPoint("TOP", container, "TOP", 0, -BAND_HEIGHT)
+	Minimap:SetPoint("TOP", container, "TOP", 0, panel and -BAND_HEIGHT or -HEADER_HEIGHT - HEADER_GAP)
+	ns:SnapToPixelGrid(Minimap)
+	AnchorArt(style)
 
 	tracking:ClearAllPoints()
-	ns:SetPoint(tracking, "TOPLEFT", artFrame, "TOPLEFT", HEADER_SIDE, -HEADER_TOP)
-
 	header:ClearAllPoints()
+	if panel then
+		ns:SetPoint(tracking, "TOPLEFT", artFrame, "TOPLEFT", HEADER_SIDE, -HEADER_TOP)
+		ns:SetPoint(header, "RIGHT", artFrame, "RIGHT", -HEADER_SIDE - rightWidth, 0)
+	else
+		ns:SetPoint(tracking, "BOTTOMLEFT", artFrame, "TOPLEFT", artEdges[style], HEADER_GAP - artEdges[style])
+		ns:SetPoint(header, "RIGHT", artFrame, "RIGHT", -artEdges[style] - rightWidth, 0)
+	end
 	ns:SetPoint(header, "LEFT", tracking, "RIGHT", HEADER_GAP, 0)
-	ns:SetPoint(header, "RIGHT", artFrame, "RIGHT", -HEADER_SIDE - rightWidth, 0)
 
 	if cluster.BorderTop then
 		cluster.BorderTop:ClearAllPoints()
@@ -250,11 +287,61 @@ local function StyleHeader()
 	end)
 end
 
-local function CreateArt()
-	artFrame = CreateFrame("Frame", nil, Minimap)
-	artFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -MAP_INSET, BAND_HEIGHT)
-	artFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", MAP_INSET, -MAP_INSET)
-	NineSliceUtil.ApplyLayout(artFrame, FRAME_LAYOUT)
+local function ApplyMediaBorder(frame)
+	local name = ns:GetOption("mediaBorder")
+	local size, offset = name:match("S:(%d+) O:(%d+)")
+
+	offset = tonumber(offset) or 0
+	frame:SetBackdrop({ edgeFile = LSM:Fetch("border", name), edgeSize = tonumber(size) or MEDIA_BORDER_SIZE })
+	artInsets.media = { offset, offset, offset, offset }
+end
+
+local function CreateArt(style)
+	local frame = CreateFrame("Frame", nil, Minimap, style == "media" and "BackdropTemplate" or nil)
+	local texture, layout, center, topLeft, bottomRight
+
+	if style == "panel" then
+		NineSliceUtil.ApplyLayout(frame, FRAME_LAYOUT)
+		return frame
+	end
+
+	if style == "actionBar" then
+		frame:SetParent(container)
+		frame:SetFrameLevel(math.max(Minimap:GetFrameLevel() - 1, 0))
+		texture = frame:CreateTexture(nil, "BACKGROUND")
+		texture:SetAtlas(ACTION_BAR_ATLAS)
+		texture:SetAllPoints()
+		return frame
+	end
+
+	if style == "media" then
+		ApplyMediaBorder(frame)
+		return frame
+	end
+
+	layout = NineSliceUtil.GetLayout(BORDER_LAYOUT)
+	center = layout.Center
+	topLeft = C_Texture.GetAtlasInfo(layout.TopLeftCorner.atlas)
+	bottomRight = C_Texture.GetAtlasInfo(layout.BottomRightCorner.atlas)
+	artInsets[style] = { topLeft.width + center.x, topLeft.height - center.y, bottomRight.width - center.x1, bottomRight.height + center.y1 }
+	NineSliceUtil.ApplyLayout(frame, layout)
+	frame.Center:Hide()
+
+	return frame
+end
+
+local function ApplyStyle()
+	local style = ns:GetOption("style")
+
+	if artFrame then
+		artFrame:Hide()
+	end
+	artFrames[style] = artFrames[style] or CreateArt(style)
+	artFrame = artFrames[style]
+	artFrame:Show()
+	mask = style == "actionBar" and CHAMFER_MASK or MASK
+	Minimap:SetMaskTexture(mask)
+	Layout()
 end
 
 local buttonAngles = {}
@@ -341,7 +428,7 @@ end
 local function ApplySize()
 	local size = ns:GetOption("mapSize")
 	local zoom = Minimap:GetZoom()
-	Minimap:SetSize(size, size)
+	ns:SetSize(Minimap, size, size)
 	Minimap:SetZoom(zoom > 0 and zoom - 1 or zoom + 1)
 	Minimap:SetZoom(zoom)
 
@@ -377,7 +464,7 @@ function ns:OnLogin()
 	end
 
 	ApplySize()
-	Minimap:SetMaskTexture(MASK)
+	Minimap:SetMaskTexture(mask)
 	hooksecurefunc(Minimap, "SetMaskTexture", KeepSquare)
 
 	ns:Hide(MinimapCompassTexture)
@@ -385,13 +472,17 @@ function ns:OnLogin()
 		ns:Hide(MinimapCompassTextureUnderlay)
 	end
 
-	CreateArt()
 	StyleHeader()
 	ApplyFonts()
+	ApplyStyle()
 	ApplyWidgets()
 
 	hooksecurefunc(MinimapCluster, "SetHeaderUnderneath", Layout)
 	hooksecurefunc(MinimapCluster, "SetEditModeScale", Layout)
+	hooksecurefunc(MinimapCluster, "ApplySystemAnchor", Layout)
+	hooksecurefunc(MinimapCluster, "OnDragStop", Layout)
+	ns:RegisterEvent("UI_SCALE_CHANGED", Layout)
+	ns:RegisterEvent("DISPLAY_SIZE_CHANGED", Layout)
 	hooksecurefunc("MiniMapIndicatorFrame_UpdatePosition", PlaceIndicators)
 	if MinimapCluster.UpdateMinimapConfig then
 		hooksecurefunc(MinimapCluster, "UpdateMinimapConfig", Layout)
@@ -414,7 +505,17 @@ function ns:OnLogin()
 	ns:RegisterOptionCallback("hideCalendar", ApplyWidgets)
 	ns:RegisterOptionCallback("hideDayNight", ApplyWidgets)
 	ns:RegisterOptionCallback("headerFontSize", ApplyFonts)
-	ns:RegisterOptionCallback("mapSize", ApplySize)
+	ns:RegisterOptionCallback("style", ApplyStyle)
+	ns:RegisterOptionCallback("mediaBorder", function()
+		if artFrames.media then
+			ApplyMediaBorder(artFrames.media)
+			Layout()
+		end
+	end)
+	ns:RegisterOptionCallback("mapSize", function()
+		ApplySize()
+		Layout()
+	end)
 	ns:RegisterEvent("PLAYER_ENTERING_WORLD", CatchButtons)
 	ns:RegisterOptionCallback("coords", function()
 		ns:ApplyCoords()

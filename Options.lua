@@ -58,6 +58,29 @@ local settings = {
 		requires = "coords",
 	},
 	{
+		key = "style",
+		type = "menu",
+		title = "Style",
+		tooltip = "Panel frames the minimap and header together. The borders frame only the minimap and put the header above it.",
+		default = "panel",
+		options = {
+			{ value = "panel", label = "Panel" },
+			{ value = "tooltip", label = "Tooltip border" },
+			{ value = "actionBar", label = "Action bar border" },
+			{ value = "media", label = "Media border" },
+		},
+	},
+	{
+		key = "mediaBorder",
+		type = "media",
+		mediaType = "border",
+		title = "Media border",
+		tooltip = "Any LibSharedMedia border, for example from ls_Borders.",
+		default = "Blizzard Tooltip",
+		requires = "style",
+		requiresValue = "media",
+	},
+	{
 		key = "mapSize",
 		type = "slider",
 		title = "Minimap size",
@@ -104,7 +127,16 @@ local LibEditMode = ns.LibEditMode
 local SETTING_KINDS = {
 	toggle = LibEditMode.SettingType.Checkbox,
 	slider = LibEditMode.SettingType.Slider,
+	menu = LibEditMode.SettingType.Dropdown,
 }
+
+local function DropdownValues(options)
+	local values = {}
+	for _, option in ipairs(options) do
+		table.insert(values, { text = option.label, value = option.value })
+	end
+	return values
+end
 
 local editModeSettings = {}
 for _, setting in ipairs(settings) do
@@ -117,6 +149,7 @@ for _, setting in ipairs(settings) do
 			minValue = setting.minValue,
 			maxValue = setting.maxValue,
 			valueStep = setting.valueStep,
+			values = setting.options and DropdownValues(setting.options),
 			get = function()
 				return ns:GetOption(setting.key)
 			end,
