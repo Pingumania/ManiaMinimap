@@ -9,6 +9,7 @@ local PLATE_ATLAS = "ui-hud-minimap-header-button"
 local PLATE_SLICE = 12
 local MAP_INSET = 2
 local BAND_HEIGHT = 21
+local FRAME_BOTTOM = ns:IsForever() and -9 or -3
 local HEADER_HEIGHT = 23
 local HEADER_TOP = -1
 local HEADER_SIDE = 6
@@ -32,8 +33,8 @@ local FRAME_LAYOUT = {
 	disableSharpening = true,
 	TopLeftCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopLeft", x = -14, y = 16 },
 	TopRightCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerTopRight", x = 4, y = 16 },
-	BottomLeftCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -14, y = -3 },
-	BottomRightCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = -3 },
+	BottomLeftCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomLeft", x = -14, y = FRAME_BOTTOM },
+	BottomRightCorner = { layer = "OVERLAY", atlas = "UI-Frame-Metal-CornerBottomRight", x = 4, y = FRAME_BOTTOM },
 	TopEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeTop" },
 	BottomEdge = { layer = "OVERLAY", atlas = "_UI-Frame-Metal-EdgeBottom" },
 	LeftEdge = { layer = "OVERLAY", atlas = "!UI-Frame-Metal-EdgeLeft" },
