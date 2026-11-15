@@ -358,7 +358,7 @@ end
 local function SaveAngle(button)
 	local buttonX, buttonY = button:GetCenter()
 	local mapX, mapY = Minimap:GetCenter()
-	buttonAngles[button] = math.atan2(buttonY - mapY, buttonX - mapX)
+	buttonAngles[button] = buttonX and math.atan2(buttonY - mapY, buttonX - mapX) or buttonAngles[button] or 0
 end
 
 local function PlaceButton(button)
