@@ -271,7 +271,7 @@ local function StyleHeader()
 	Adopt(zone)
 	Adopt(GameTimeFrame)
 	Adopt(AddonCompartmentFrame)
-	Adopt(cluster.IndicatorFrame)
+	cluster.IndicatorFrame:SetParent(Minimap)
 	if cluster.InstanceDifficulty then
 		Adopt(cluster.InstanceDifficulty)
 	end
